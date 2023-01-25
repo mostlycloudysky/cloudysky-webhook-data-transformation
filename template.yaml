@@ -37,25 +37,58 @@ Resources:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
     Properties:
       DefinitionUri: statemachine/stateMachine.asl.json
+      DefinitionSubstitutions:
+        StepLambdaFunctionArn: !GetAtt StepLambdaFunction.Arn
       # Type: EXPRESS
-      Policies:
-        - Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - "cloudwatch:*"
-                - "logs:*"
-              Resource: "*"
+      Role:
+        Fn::GetAtt: [ StatesExecutionRole, Arn ]
       Logging:
         Destinations:
           - CloudWatchLogsLogGroup:
               LogGroupArn: !GetAtt StateMachineLogGroup.Arn
         IncludeExecutionData: false
         Level: 'ALL'  
+  StatesExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: LambdaExecute
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: !GetAtt StepLambdaFunction.Arn
+              - Effect: Allow
+                Action:
+                  - "cloudwatch:*"
+                  - "logs:*"
+                Resource: "*"
+    
   StateMachineLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Join [ "/", [ "stepfunctions", StateMachine]]  
+
+  StepLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: step-lambda/
+      Handler: app.handler
+      Runtime: nodejs14.x
+      Timeout: 3
+      Policies: 
+        - CloudWatchPutMetricPolicy: {}
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
