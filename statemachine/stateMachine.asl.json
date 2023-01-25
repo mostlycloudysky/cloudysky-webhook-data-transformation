@@ -13,9 +13,9 @@
                     "ErrorEquals": [
                         "States.TaskFailed"
                     ],
-                    "IntervalSeconds": 20,
+                    "IntervalSeconds": 2,
                     "MaxAttempts": 2,
-                    "BackoffRate": 10
+                    "BackoffRate": 2
                 }
             ],
             "OutputPath": "$",
