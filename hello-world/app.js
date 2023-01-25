@@ -1,7 +1,10 @@
 // const axios = require('axios')
 // const url = 'http://checkip.amazonaws.com/';
 let response;
+let blogData;
 const toMarkdown = require('@sanity/block-content-to-markdown');
+const AWS = require('aws-sdk');
+const moment = require('moment');
 
 /**
  *
@@ -16,6 +19,8 @@ const toMarkdown = require('@sanity/block-content-to-markdown');
  *
  */
 exports.lambdaHandler = async (event, context) => {
+  const sfnArn = process.env.StateMachineArn;
+  const rightNow = moment().format('YYYYMMDD-hhmmss');
   console.log(event);
 
   let blog = JSON.parse(event.body);
@@ -36,18 +41,23 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(toMarkdown(blogBody, { serializers }));
 
+  postData = toMarkdown(blogBody, { serializers });
+
+  const data = {
+    blogData: postData,
+  };
+
+  const params = {
+    stateMachineArn: sfnArn,
+    input: JSON.stringify(data),
+    name: `ArchiveAt${rightNow}`,
+  };
+
+  const stepfunctions = new AWS.StepFunctions();
   try {
-    // const ret = await axios(url);
-    response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'hello world',
-        // location: ret.data.trim()
-      }),
-    };
+    response = await stepfunctions.startExecution(params).promise();
   } catch (err) {
-    console.log(err);
-    return err;
+    console.error(err);
   }
 
   return response;
