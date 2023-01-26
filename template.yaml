@@ -25,6 +25,13 @@ Resources:
           StatusCode: 200
           ResponseTemplates:
             application/json: '{ "message": "Sucessfully processed the event" }'
+        DEFAULT_4XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+          StatusCode: 200
+          ResponseTemplates:
+            application/json: '{ "message": "Sucessfully processed the event" }'
 
 
 
