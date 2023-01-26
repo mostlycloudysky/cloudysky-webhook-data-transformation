@@ -25,6 +25,13 @@ Resources:
           StatusCode: 200
           ResponseTemplates:
             application/json: '{ "message": "Sucessfully processed the event" }'
+        DEFAULT_4XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+          StatusCode: 200
+          ResponseTemplates:
+            application/json: '{ "message": "Sucessfully processed the event" }'
 
 
 
@@ -56,6 +63,8 @@ Resources:
       DefinitionUri: statemachine/stateMachine.asl.json
       DefinitionSubstitutions:
         StepLambdaFunctionArn: !GetAtt StepLambdaFunction.Arn
+        SecondLambdaFunctionArn: !GetAtt SecondLambdaFunction.Arn
+        ThirdLambdaFunctionArn: !GetAtt ThirdLambdaFunction.Arn
       # Type: EXPRESS
       Role:
         Fn::GetAtt: [ StatesExecutionRole, Arn ]
@@ -85,7 +94,11 @@ Resources:
               - Effect: Allow
                 Action:
                   - "lambda:InvokeFunction"
-                Resource: !GetAtt StepLambdaFunction.Arn
+                Resource: 
+                  - !GetAtt StepLambdaFunction.Arn
+                  - !GetAtt SecondLambdaFunction.Arn
+                  - !GetAtt ThirdLambdaFunction.Arn
+
               - Effect: Allow
                 Action:
                   - "cloudwatch:*"
@@ -101,6 +114,25 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: step-lambda/
+      Handler: app.handler
+      Runtime: nodejs14.x
+      Timeout: 3
+      Policies: 
+        - CloudWatchPutMetricPolicy: {}
+
+  SecondLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: second-lambda/
+      Handler: app.handler
+      Runtime: nodejs14.x
+      Timeout: 3
+      Policies: 
+        - CloudWatchPutMetricPolicy: {}
+  ThirdLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: third-lambda/
       Handler: app.handler
       Runtime: nodejs14.x
       Timeout: 3
