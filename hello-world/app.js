@@ -26,9 +26,8 @@ exports.lambdaHandler = async (event, context) => {
   let blog = JSON.parse(event.body);
   let blogTitle = blog.title;
   let blogDescription = blog.description;
-  console.log('Blog Title', blogTitle);
-  console.log('Blog Description', blogDescription);
   let blogBody = blog.body;
+  let blogID = blog._id;
   console.log('==================');
   // console.log(JSON.stringify(blogBody));
 
@@ -44,7 +43,10 @@ exports.lambdaHandler = async (event, context) => {
   postData = toMarkdown(blogBody, { serializers });
 
   const data = {
-    blogData: postData,
+    id: blogID,
+    title: blogTitle,
+    description: blogDescription,
+    body: postData,
   };
 
   const params = {
