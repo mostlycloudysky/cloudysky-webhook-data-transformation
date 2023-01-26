@@ -3,23 +3,83 @@
     "StartAt": "SetInitialStatus",
     "States": {
         "SetInitialStatus": {
-            "Type": "Task",
-            "Resource": "${StepLambdaFunctionArn}",
-            "Parameters": {
-                "Payload.$": "$"
-            },
-            "Retry": [
+            "Type": "Parallel",
+            "End": true,
+            "Branches": [
                 {
-                    "ErrorEquals": [
-                        "States.TaskFailed"
-                    ],
-                    "IntervalSeconds": 2,
-                    "MaxAttempts": 2,
-                    "BackoffRate": 2
+                    "StartAt": "ParallelStepFunction1",
+                    "States": {
+                       "ParallelStepFunction1": {
+                            "Type": "Task",
+                            "Resource": "${StepLambdaFunctionArn}",
+                            "Parameters": {
+                            "Payload.$": "$"
+                            },
+                            "Retry": [
+                                {
+                                    "ErrorEquals": [
+                                        "States.TaskFailed"
+                                    ],
+                                    "IntervalSeconds": 2,
+                                    "MaxAttempts": 2,
+                                    "BackoffRate": 2
+                                }
+                            ],
+                            "OutputPath": "$",
+                            "End": true
+                       } 
+                    }
+                },
+                {
+                    "StartAt": "ParallelStepFunction2",
+                    "States": {
+                       "ParallelStepFunction2": {
+                            "Type": "Task",
+                            "Resource": "${SecondLambdaFunctionArn}",
+                            "Parameters": {
+                            "Payload.$": "$"
+                            },
+                            "Retry": [
+                                {
+                                    "ErrorEquals": [
+                                        "States.TaskFailed"
+                                    ],
+                                    "IntervalSeconds": 2,
+                                    "MaxAttempts": 2,
+                                    "BackoffRate": 2
+                                }
+                            ],
+                            "OutputPath": "$",
+                            "End": true
+                       } 
+                    }
+                },
+                {
+                    "StartAt": "ParallelStepFunction3",
+                    "States": {
+                       "ParallelStepFunction3": {
+                            "Type": "Task",
+                            "Resource": "${ThirdLambdaFunctionArn}",
+                            "Parameters": {
+                            "Payload.$": "$"
+                            },
+                            "Retry": [
+                                {
+                                    "ErrorEquals": [
+                                        "States.TaskFailed"
+                                    ],
+                                    "IntervalSeconds": 2,
+                                    "MaxAttempts": 2,
+                                    "BackoffRate": 2
+                                }
+                            ],
+                            "OutputPath": "$",
+                            "End": true
+                       } 
+                    }
                 }
-            ],
-            "OutputPath": "$",
-            "End": true
+            ]
+
         }
     }
 }
