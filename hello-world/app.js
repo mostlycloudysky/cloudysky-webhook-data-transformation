@@ -41,12 +41,13 @@ exports.lambdaHandler = async (event, context) => {
   console.log(toMarkdown(blogBody, { serializers }));
 
   postData = toMarkdown(blogBody, { serializers });
+  let jsonAsPrettyString = `${JSON.stringify(postData, null, 2)}`;
 
   const data = {
     id: blogID,
     title: blogTitle,
     description: blogDescription,
-    body: postData,
+    body: blogBody,
   };
 
   const params = {
