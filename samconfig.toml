@@ -2,9 +2,9 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "webhook-poc"
+stack_name = "CLOUDYSK-BATCH-CROSSPOST"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-ov5r979w7jek"
-s3_prefix = "webhook-poc"
+s3_prefix = "CLOUDYSK-BATCH-CROSSPOST"
 region = "us-east-1"
 profile = "san-dev"
 confirm_changeset = true
