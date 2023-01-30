@@ -36,7 +36,6 @@ exports.lambdaHandler = async (event, context) => {
     throw error;
   }
 
-  const secret = response.SecretString;
-  console.log(secret);
-  console.log(typeof secret);
+  const secret = JSON.parse(response.SecretString);
+  console.log(secret.medium_api_token);
 };
