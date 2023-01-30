@@ -62,7 +62,7 @@ Resources:
     Properties:
       DefinitionUri: statemachine/stateMachine.asl.json
       DefinitionSubstitutions:
-        StepLambdaFunctionArn: !GetAtt StepLambdaFunction.Arn
+        MediumArticleLambdaFunctionArn: !GetAtt MediumArticleLambdaFunction.Arn
         SecondLambdaFunctionArn: !GetAtt SecondLambdaFunction.Arn
         ThirdLambdaFunctionArn: !GetAtt ThirdLambdaFunction.Arn
       # Type: EXPRESS
@@ -95,7 +95,7 @@ Resources:
                 Action:
                   - "lambda:InvokeFunction"
                 Resource: 
-                  - !GetAtt StepLambdaFunction.Arn
+                  - !GetAtt MediumArticleLambdaFunction.Arn
                   - !GetAtt SecondLambdaFunction.Arn
                   - !GetAtt ThirdLambdaFunction.Arn
 
@@ -110,12 +110,12 @@ Resources:
     Properties:
       LogGroupName: !Join [ "/", [ "stepfunctions", StateMachine]]  
 
-  StepLambdaFunction:
+  MediumArticleLambdaFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: step-lambda/
-      Handler: app.handler
-      Runtime: nodejs14.x
+      CodeUri: medium_article_publish/
+      Handler: app.lambdaHandler
+      Runtime: nodejs16.x
       Timeout: 3
       Policies: 
         - CloudWatchPutMetricPolicy: {}

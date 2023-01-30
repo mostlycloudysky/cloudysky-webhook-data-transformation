@@ -7,11 +7,11 @@
             "End": true,
             "Branches": [
                 {
-                    "StartAt": "ParallelStepFunction1",
+                    "StartAt": "MediumArticlePublishFunction",
                     "States": {
-                       "ParallelStepFunction1": {
+                       "MediumArticlePublishFunction": {
                             "Type": "Task",
-                            "Resource": "${StepLambdaFunctionArn}",
+                            "Resource": "${MediumArticleLambdaFunctionArn}",
                             "Parameters": {
                             "Payload.$": "$"
                             },
