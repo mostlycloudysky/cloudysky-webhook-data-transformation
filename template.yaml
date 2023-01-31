@@ -64,7 +64,7 @@ Resources:
       DefinitionSubstitutions:
         MediumArticleLambdaFunctionArn: !GetAtt MediumArticleLambdaFunction.Arn
         DevtoArticleLambdaFunctionArn: !GetAtt DevtoArticleLambdaFunction.Arn
-        ThirdLambdaFunctionArn: !GetAtt ThirdLambdaFunction.Arn
+        HashnodeArticleLambdaFunctionArn: !GetAtt HashnodeArticleLambdaFunction.Arn
       # Type: EXPRESS
       Role:
         Fn::GetAtt: [ StatesExecutionRole, Arn ]
@@ -97,7 +97,7 @@ Resources:
                 Resource: 
                   - !GetAtt MediumArticleLambdaFunction.Arn
                   - !GetAtt DevtoArticleLambdaFunction.Arn
-                  - !GetAtt ThirdLambdaFunction.Arn
+                  - !GetAtt HashnodeArticleLambdaFunction.Arn
 
               - Effect: Allow
                 Action:
@@ -133,15 +133,17 @@ Resources:
         - CloudWatchPutMetricPolicy: {}
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:blogs-api-9A1WfQ"
-  ThirdLambdaFunction:
+  HashnodeArticleLambdaFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: third-lambda/
-      Handler: app.handler
-      Runtime: nodejs14.x
+      CodeUri: hashnode_article_publish/
+      Handler: app.lambdaHandler
+      Runtime: nodejs16.x
       Timeout: 3
       Policies: 
         - CloudWatchPutMetricPolicy: {}
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:blogs-api-9A1WfQ"
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
