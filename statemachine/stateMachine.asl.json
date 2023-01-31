@@ -55,11 +55,11 @@
                     }
                 },
                 {
-                    "StartAt": "ParallelStepFunction3",
+                    "StartAt": "HashnodeArticlePublishFunction",
                     "States": {
-                       "ParallelStepFunction3": {
+                       "HashnodeArticlePublishFunction": {
                             "Type": "Task",
-                            "Resource": "${ThirdLambdaFunctionArn}",
+                            "Resource": "${HashnodeArticleLambdaFunctionArn}",
                             "Parameters": {
                             "Payload.$": "$"
                             },

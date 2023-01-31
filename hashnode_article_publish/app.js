@@ -38,42 +38,47 @@ exports.lambdaHandler = async (event, context) => {
   }
 
   const secret = JSON.parse(response.SecretString);
-  console.log(secret.medium_api_token);
-  console.log(typeof secret.medium_api_token);
-  const MEDIUM_API_TOKEN = secret.medium_api_token;
 
-  const postResponse = await axios.get('https://api.medium.com/v1/me', {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${MEDIUM_API_TOKEN}`,
+  const HASHNODE_API_TOKEN = secret.hashnode_api_token;
+  console.log(HASHNODE_API_TOKEN);
+
+  const data = {
+    query: `mutation ($input: CreateStoryInput!){
+        createPublicationStory(publicationId: "63c592aacf97d7522bf68db1",input: $input){
+            message
+            post{
+            _id
+            title
+            }
+        }
+    }`,
+    variables: {
+      input: {
+        title: sanityBlogTitle,
+        contentMarkdown: sanityBlogBody,
+        tags: [
+          {
+            _id: '63c592aacf97d7522bf68db1',
+            slug: 'AWS',
+            name: 'AWS',
+          },
+        ],
+        // coverImageURL:
+        //   'https://codybontecou.com/images/header-meta-component.png',
+      },
     },
-  });
-
-  const profileInfo = postResponse.data;
-  const data = profileInfo.data;
-  const mediumProfileId = data.id;
-
-  //Post data to medium
-  const createMediumArticleData = {
-    title: sanityBlogTitle,
-    contentFormat: 'markdown',
-    content: sanityBlogBody,
-    tags: ['AWS'],
-    publishStatus: 'draft',
   };
 
-  console.log(createMediumArticleData);
-  console.log(typeof createMediumArticleData);
-
-  const mediumArticleResponse = await axios.post(
-    `https://api.medium.com/v1/users/${mediumProfileId}/posts`,
-    createMediumArticleData,
+  const hashNodeArticleResponse = await axios.post(
+    'https://api.hashnode.com',
+    data,
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${MEDIUM_API_TOKEN}`,
+        Authorization: HASHNODE_API_TOKEN,
       },
     }
   );
-  console.log(mediumArticleResponse);
+
+  console.log(hashNodeArticleResponse);
 };
