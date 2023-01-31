@@ -37,7 +37,28 @@ exports.lambdaHandler = async (event, context) => {
   }
 
   const secret = JSON.parse(response.SecretString);
-  console.log(secret.medium_api_token);
-  console.log(typeof secret.medium_api_token);
-  const MEDIUM_API_TOKEN = secret.medium_api_token;
+  const DEVTO_API_TOKEN = secret.devto_api_key;
+
+  //Post data to DevTo
+  const createDevToArticleData = {
+    article: {
+      title: sanityBlogTitle,
+      published: false,
+      body_markdown: sanityBlogBody,
+      tags: ['AWS'],
+    },
+  };
+
+  const devtoArticleResponse = await axios.post(
+    'https://dev.to/api/articles',
+    createDevToArticleData,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': DEVTO_API_TOKEN,
+      },
+    }
+  );
+
+  console.log(devtoArticleResponse);
 };
