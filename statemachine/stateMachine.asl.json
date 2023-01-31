@@ -31,11 +31,11 @@
                     }
                 },
                 {
-                    "StartAt": "ParallelStepFunction2",
+                    "StartAt": "DevtoArticlePublishFunction",
                     "States": {
-                       "ParallelStepFunction2": {
+                       "DevtoArticlePublishFunction": {
                             "Type": "Task",
-                            "Resource": "${SecondLambdaFunctionArn}",
+                            "Resource": "${DevtoArticleLambdaFunctionArn}",
                             "Parameters": {
                             "Payload.$": "$"
                             },

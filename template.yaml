@@ -63,7 +63,7 @@ Resources:
       DefinitionUri: statemachine/stateMachine.asl.json
       DefinitionSubstitutions:
         MediumArticleLambdaFunctionArn: !GetAtt MediumArticleLambdaFunction.Arn
-        SecondLambdaFunctionArn: !GetAtt SecondLambdaFunction.Arn
+        DevtoArticleLambdaFunctionArn: !GetAtt DevtoArticleLambdaFunction.Arn
         ThirdLambdaFunctionArn: !GetAtt ThirdLambdaFunction.Arn
       # Type: EXPRESS
       Role:
@@ -96,7 +96,7 @@ Resources:
                   - "lambda:InvokeFunction"
                 Resource: 
                   - !GetAtt MediumArticleLambdaFunction.Arn
-                  - !GetAtt SecondLambdaFunction.Arn
+                  - !GetAtt DevtoArticleLambdaFunction.Arn
                   - !GetAtt ThirdLambdaFunction.Arn
 
               - Effect: Allow
@@ -122,15 +122,17 @@ Resources:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:blogs-api-9A1WfQ"
 
-  SecondLambdaFunction:
+  DevtoArticleLambdaFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: second-lambda/
-      Handler: app.handler
-      Runtime: nodejs14.x
+      CodeUri: devto_article_publish/
+      Handler: app.lambdaHandler
+      Runtime: nodejs16.x
       Timeout: 3
       Policies: 
         - CloudWatchPutMetricPolicy: {}
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:blogs-api-9A1WfQ"
   ThirdLambdaFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
