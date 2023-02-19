@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: A name for the Amazon ES domain
+  MasterUsername:
+    Type: String
+    Description: Master usernames must be between 1 and 16 characters.
+  MasterPassword:
+    Type: String
+    Description: Master password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+    NoEcho: true
+#
+#
+#
+# Resources section defines metadata for the Data Catalog
+Resources:
+  OpenSearchServiceDomain:
+    Type: AWS::OpenSearchService::Domain
+    Properties:
+      DomainName: !Ref DomainName
+      EngineVersion: 'OpenSearch_1.2'
+      ClusterConfig:
+        DedicatedMasterEnabled: true
+        InstanceCount: '2'
+        ZoneAwarenessEnabled: true
+        InstanceType: 't2.medium.search'
+        DedicatedMasterType: 't2.medium.search'
+        DedicatedMasterCount: '3'
+      EBSOptions:
+        EBSEnabled: true
+        Iops: '0'
+        VolumeSize: '20'
+        VolumeType: 'gp2'
+      AccessPolicies:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: '*'
+          Action:
+          - 'es:*'
+          Resource: !Sub 'arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${DomainName}/*'
+      EncryptionAtRestOptions:
+        Enabled: true
+      NodeToNodeEncryptionOptions:
+        Enabled: true
+      DomainEndpointOptions:
+        EnforceHTTPS: true
+      AdvancedSecurityOptions:
+        Enabled: true
+        InternalUserDatabaseEnabled: true
+        MasterUserOptions:
+          MasterUserName: !Ref MasterUsername
+          MasterUserPassword: !Ref MasterPassword
+  MySecretMasterUsername:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: os-username
+      Description: Master username for Amazon Opensearch cluster
+      SecretString: !Ref MasterUsername
+  MySecretMasterPassword:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: os-password
+      Description: Master password for Amazon Opensearch cluster
+      SecretString: !Ref MasterPassword
+Outputs:
+  DomainEndpoint:
+    Value: !GetAtt OpenSearchServiceDomain.DomainEndpoint
