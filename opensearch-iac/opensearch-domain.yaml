@@ -18,15 +18,15 @@ Parameters:
 Resources:
   OpenSearchServiceDomain:
     Type: AWS::OpenSearchService::Domain
-    Properties:
+    Properties: 
       DomainName: !Ref DomainName
-      EngineVersion: 'OpenSearch_1.2'
+      EngineVersion: 'OpenSearch_2.3'
       ClusterConfig:
         DedicatedMasterEnabled: true
         InstanceCount: '2'
         ZoneAwarenessEnabled: true
-        InstanceType: 't2.medium.search'
-        DedicatedMasterType: 't2.medium.search'
+        InstanceType: 'r6g.large.search'
+        DedicatedMasterType: 'r6g.large.search'
         DedicatedMasterCount: '3'
       EBSOptions:
         EBSEnabled: true
