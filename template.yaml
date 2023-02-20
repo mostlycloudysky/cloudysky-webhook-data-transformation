@@ -65,7 +65,7 @@ Resources:
         MediumArticleLambdaFunctionArn: !GetAtt MediumArticleLambdaFunction.Arn
         DevtoArticleLambdaFunctionArn: !GetAtt DevtoArticleLambdaFunction.Arn
         HashnodeArticleLambdaFunctionArn: !GetAtt HashnodeArticleLambdaFunction.Arn
-      # Type: EXPRESS
+        OpenSearchLoadArticleFunctionArn: !GetAtt OpenSearchLoadArticleFunction.Arn
       Role:
         Fn::GetAtt: [ StatesExecutionRole, Arn ]
       Logging:
@@ -98,7 +98,7 @@ Resources:
                   - !GetAtt MediumArticleLambdaFunction.Arn
                   - !GetAtt DevtoArticleLambdaFunction.Arn
                   - !GetAtt HashnodeArticleLambdaFunction.Arn
-
+                  - !GetAtt OpenSearchLoadArticleFunction.Arn
               - Effect: Allow
                 Action:
                   - "cloudwatch:*"
@@ -139,6 +139,20 @@ Resources:
       CodeUri: hashnode_article_publish/
       Handler: app.lambdaHandler
       Runtime: nodejs16.x
+      Timeout: 3
+      Policies: 
+        - CloudWatchPutMetricPolicy: {}
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:blogs-api-9A1WfQ"
+
+  OpenSearchLoadArticleFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: opensearch_load_article/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - x86_64
       Timeout: 3
       Policies: 
         - CloudWatchPutMetricPolicy: {}
