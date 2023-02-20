@@ -77,7 +77,32 @@
                             "End": true
                        } 
                     }
+                },
+                {
+                    "StartAt": "OpenSearchLoadArticleFunction",
+                    "States": {
+                       "OpenSearchLoadArticleFunction": {
+                            "Type": "Task",
+                            "Resource": "${OpenSearchLoadArticleFunctionArn}",
+                            "Parameters": {
+                            "Payload.$": "$"
+                            },
+                            "Retry": [
+                                {
+                                    "ErrorEquals": [
+                                        "States.TaskFailed"
+                                    ],
+                                    "IntervalSeconds": 2,
+                                    "MaxAttempts": 2,
+                                    "BackoffRate": 2
+                                }
+                            ],
+                            "OutputPath": "$",
+                            "End": true
+                       } 
+                    }
                 }
+
             ]
 
         }
