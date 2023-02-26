@@ -44,6 +44,7 @@ Resources:
       Architectures:
       - x86_64
       Policies:
+        - SecretsManagerReadWrite
         - StepFunctionsExecutionPolicy:
             StateMachineName: !GetAtt StateMachine.Name
       Environment:
