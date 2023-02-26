@@ -7,6 +7,18 @@ const { createClient } = require('@sanity/client');
 const secretManagerClient = new AWS.SecretsManager();
 
 exports.lambdaHandler = async (event, context) => {
+  // Step Function execution section
+  const sfnArn = process.env.StateMachineArn;
+  const rightNow = moment().format('YYYYMMDD-hhmmss');
+  console.log(event);
+
+  let blog = JSON.parse(event.body);
+  console.log(blog);
+  let blogTitle = blog.title;
+  let blogDescription = blog.description;
+  let blogBody = blog.body;
+  let blogID = blog._id;
+
   // Get the secret value for sanity
   const secret_name = 'sanity-cms';
   let response;
@@ -32,23 +44,22 @@ exports.lambdaHandler = async (event, context) => {
   };
   const client = createClient(config);
 
-  // Step Function execution section
-  const sfnArn = process.env.StateMachineArn;
-  const rightNow = moment().format('YYYYMMDD-hhmmss');
-  console.log(event);
+  const query = `*[_type == 'post' && _id == '${blogID}']{
+    categories[] -> {
+      title,
+      slug
+    }
+  }`;
 
-  let blog = JSON.parse(event.body);
-  console.log(blog);
-  let blogTitle = blog.title;
-  let blogDescription = blog.description;
-  let blogBody = blog.body;
-  let blogID = blog._id;
+  const categories = await client.fetch(query);
+  console.log(categories);
 
   const data = {
     id: blogID,
     title: blogTitle,
     description: blogDescription,
     body: blogBody,
+    categories: categories,
   };
 
   const params = {
