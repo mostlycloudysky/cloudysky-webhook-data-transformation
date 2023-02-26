@@ -3,7 +3,6 @@ let blogData;
 const AWS = require('aws-sdk');
 const moment = require('moment');
 const { createClient } = require('@sanity/client');
-// const { imageUrlBuilder } = require('@sanity/image-url');
 const secretManagerClient = new AWS.SecretsManager();
 
 exports.lambdaHandler = async (event, context) => {
@@ -18,6 +17,9 @@ exports.lambdaHandler = async (event, context) => {
   let blogDescription = blog.description;
   let blogBody = blog.body;
   let blogID = blog._id;
+  let blogCreatedAt = blog._createdAt;
+  let blogUpdatedAt = blog._updatedAt;
+  let blogMainImage = blog.mainImage;
 
   // Get the secret value for sanity
   const secret_name = 'sanity-cms';
@@ -51,8 +53,8 @@ exports.lambdaHandler = async (event, context) => {
     }
   }`;
 
+  // Get the categories
   const categories = await client.fetch(query);
-  console.log(categories);
 
   const data = {
     id: blogID,
@@ -60,6 +62,9 @@ exports.lambdaHandler = async (event, context) => {
     description: blogDescription,
     body: blogBody,
     categories: categories,
+    createdAt: blogCreatedAt,
+    updatedAt: blogUpdatedAt,
+    mainImage: blogMainImage,
   };
 
   const params = {
