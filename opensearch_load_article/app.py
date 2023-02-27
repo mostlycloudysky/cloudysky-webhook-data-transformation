@@ -12,13 +12,23 @@ def lambda_handler(event, context):
     sanity_blog_description = sanity_blog_playload['description']
     sanity_blog_body = sanity_blog_playload['body']
     sanity_blog_id = sanity_blog_playload['id']
+    sanity_blog_categories = sanity_blog_playload['categories']
+    sanity_blog_created_at = sanity_blog_playload['createdAt']
+    sanity_blog_updated_at = sanity_blog_playload['updatedAt']
+
+    categories = []
+    for category in sanity_blog_categories:
+        categories.append(category['title'])
 
     sanity_cms_data = [
         {
             "id": sanity_blog_id,
             "title": sanity_blog_title,
             "description": sanity_blog_description,
-            "body": sanity_blog_body
+            "body": sanity_blog_body,
+            "categories": categories,
+            "createdAt": sanity_blog_created_at,
+            "updatedAt": sanity_blog_updated_at
         }
     ]
 

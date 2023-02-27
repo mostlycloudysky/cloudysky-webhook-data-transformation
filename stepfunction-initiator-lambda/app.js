@@ -61,7 +61,7 @@ exports.lambdaHandler = async (event, context) => {
     title: blogTitle,
     description: blogDescription,
     body: blogBody,
-    categories: categories,
+    categories: categories[0].categories,
     createdAt: blogCreatedAt,
     updatedAt: blogUpdatedAt,
     mainImage: blogMainImage,
