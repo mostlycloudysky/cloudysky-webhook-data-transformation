@@ -54,9 +54,7 @@ def lambda_handler(event, context):
         return connection_string
 
     # Insert Documents
-    def insert_documents(data):
-        connection_string = get_connection_string()
-        client = OpenSearch([connection_string])
+    def insert_documents(data, client, index):
 
         def gendata():
             for document in data:
@@ -99,10 +97,7 @@ def lambda_handler(event, context):
     print(searchResponse)
 
     if searchResponse['hits']['total']['value'] == 0:
-        print("Document not found, inserting new document")
-        insert_documents(sanity_cms_data)
+        insert_documents(sanity_cms_data, client, index)
     else:
-        print(connection_string)
-        print(client)
         delete_document(sanity_blog_id, client, index)
-        # insert_documents(sanity_cms_data)
+        insert_documents(sanity_cms_data, client, index)
