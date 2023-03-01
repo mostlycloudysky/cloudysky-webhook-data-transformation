@@ -71,9 +71,10 @@ def lambda_handler(event, context):
         print(response)
 
     # Delete Document by ID
-    def delete_document(id):
+    def delete_document(id, client, index):
         response = client.delete(index=index, id=id)
         print(response)
+
     # Execution of the index data
     connection_string = get_connection_string()
     client = OpenSearch([connection_string])
@@ -101,9 +102,7 @@ def lambda_handler(event, context):
         print("Document not found, inserting new document")
         insert_documents(sanity_cms_data)
     else:
-        connection_string = get_connection_string()
         print(connection_string)
-        client = OpenSearch([connection_string])
         print(client)
-        delete_document(sanity_blog_id)
+        delete_document(sanity_blog_id, client, index)
         # insert_documents(sanity_cms_data)
