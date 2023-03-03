@@ -55,7 +55,6 @@ def lambda_handler(event, context):
 
     # Insert Documents
     def insert_documents(data, client, index):
-
         def gendata():
             for document in data:
                 id = document["id"]
@@ -68,36 +67,31 @@ def lambda_handler(event, context):
         print("\nIndexing Documents")
         print(response)
 
-    # Delete Document by ID
-    def delete_document(id, client, index):
-        response = client.delete(index=index, id=id)
+    # Delete Document
+    def update_documents(connection_string, data, client):
+        def gendata():
+            for document in data:
+                index_id = document["id"]
+                # Delete 'id' column because we don't want to index it
+                yield {
+                    "_op_type": "update",
+                    "_id": index_id,
+                    "_index": index,
+                    "doc": document,
+                }
+        response = helpers.bulk(client, gendata(), request_timeout=60)
+        print('\nUpdating document')
         print(response)
 
     # Execution of the index data
     connection_string = get_connection_string()
     client = OpenSearch([connection_string])
-    # Search documents in the index
-    searchResponse = client.search(
-        index=index,
-        body={
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "match_phrase": {
-                                "id": sanity_blog_id
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-    )
-    print("Search Documents response:")
-    print(searchResponse)
+    # Search for the document
+    document_exists = client.exists(index=index, id=sanity_blog_id)
 
-    if searchResponse['hits']['total']['value'] == 0:
-        insert_documents(sanity_cms_data, client, index)
+    if document_exists:
+        print("Document already exists")
+        update_documents(connection_string, sanity_cms_data, client)
     else:
-        delete_document(sanity_blog_id, client, index)
+        print("Document does not exist")
         insert_documents(sanity_cms_data, client, index)
