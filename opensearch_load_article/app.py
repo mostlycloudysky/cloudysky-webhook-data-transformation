@@ -87,9 +87,8 @@ def lambda_handler(event, context):
     connection_string = get_connection_string()
     client = OpenSearch([connection_string])
     # Search for the document
-    document_exists = client.exists(index=index, id=sanity_blog_id)
 
-    if document_exists:
+    if document_exists := client.exists(index=index, id=sanity_blog_id):
         print("Document already exists")
         update_documents(connection_string, sanity_cms_data, client)
     else:
